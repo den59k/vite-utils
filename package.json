@@ -4,6 +4,15 @@
   "main": "index.js",
   "license": "MIT",
   "type": "module",
+  "private": false,
+  "description": "Utils for vite projects",
+  "author": {
+    "name": "den59k"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/den59k/vite-utils.git"
+  },
   "devDependencies": {
     "@types/node": "^22.5.0",
     "fastify": "^4.28.1",

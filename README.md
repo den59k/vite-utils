@@ -1,5 +1,7 @@
 # Utils for vite projects
 
+This package contains scripts for Vite projects
+
 ## VueSvgPlugin - import svg as Vue component
 
 Using:
