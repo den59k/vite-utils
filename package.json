@@ -1,6 +1,6 @@
 {
   "name": "@den59k/vite-utils",
-  "version": "1.0.0",
+  "version": "1.0.0-a",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
