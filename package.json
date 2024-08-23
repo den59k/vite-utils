@@ -1,0 +1,31 @@
+{
+  "name": "@den59k/vite-utils",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "fastify": "^4.28.1",
+    "typescript": "^5.5.4",
+    "vite-plugin-dts": "^4.0.3"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.4.38",
+    "vite": "^5.4.2",
+    "vite-node": "^2.0.5"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "import": "./dist/index.js"
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "vite build"
+  },
+  "bin": {
+    "fastifyRunner": "dist/fastifyRunner.cjs"
+  }
+}

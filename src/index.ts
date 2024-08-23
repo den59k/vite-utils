@@ -1,0 +1,1 @@
+export { vueSvgPlugin } from './vueSvgPlugin/vueSvgPlugin'
