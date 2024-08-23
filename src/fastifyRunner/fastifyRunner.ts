@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { createServer, loadEnv } from 'vite'
 import { viteNodeHmrPlugin, createHotContext, handleMessage } from 'vite-node/hmr'
 import { installSourcemapsSupport } from 'vite-node/source-map'
@@ -15,6 +16,7 @@ let time = Date.now()
 const watchIgnore = [ "**/node_modules/**", "**/.git/**", "**/dist/**", "**/temp/**", "**/uploads/**", "**/codebase/**" ]
 
 const startMain = async (onCreate: (app: FastifyInstance, isReload: boolean) => void) => {
+  
   const server = await createServer({
     configFile: "vite.backend.config.ts",
     optimizeDeps: { noDiscovery: true, include: [] },
@@ -29,6 +31,7 @@ const startMain = async (onCreate: (app: FastifyInstance, isReload: boolean) => 
       viteNodeHmrPlugin()
     ]
   })
+  const appPath = (server.config as any).appPath ?? "./src/backend/app.ts"
 
   await server.pluginContainer.buildStart({})
   installSourcemapsSupport({
@@ -46,10 +49,10 @@ const startMain = async (onCreate: (app: FastifyInstance, isReload: boolean) => 
       return node.resolveId(id, importer)
     },
     createHotContext(runner, url) {
-      return createHotContext(runner, server.emitter, ['./src/app/app.ts'], url)
+      return createHotContext(runner, server.emitter, [appPath], url)
     },
   })
-  const { createApp } = await runner.executeFile('./src/app/app.ts')
+  const { createApp } = await runner.executeFile(appPath)
 
   let app = await createApp({ forceCloseConnections: true })
 
@@ -58,13 +61,13 @@ const startMain = async (onCreate: (app: FastifyInstance, isReload: boolean) => 
     await app.close()
     // const path = runner.moduleCache.normalizePath(`${process.cwd()}/src/app/app.ts`)
 
-    const { createApp } = runner.moduleCache.get(`${process.cwd()}/src/app/app.ts`).exports
+    const { createApp } = runner.moduleCache.get(`${process.cwd()}/${appPath.replace(/^\.?\/?/, "")}`).exports
     app = await createApp({ forceCloseConnections: true })
     onCreate(app, true)
   }
 
   server.emitter?.on('message', async (payload) => {
-    await handleMessage(runner, server.emitter, ['./src/app/app.ts'], payload)
+    await handleMessage(runner, server.emitter, [appPath], payload)
     if (payload.type === "full-reload") {
       await reloadApp()
     }
@@ -90,7 +93,7 @@ const startMain = async (onCreate: (app: FastifyInstance, isReload: boolean) => 
 
 const init = async () => {
   const env = loadEnv("development", process.cwd(), 'VITE')
-  const vite = await createServer({
+  const clientVite = await createServer({
     configFile: "vite.frontend.config.ts",
     root: process.cwd(),
     server: {
@@ -101,7 +104,7 @@ const init = async () => {
       }
     }
   })
-  Object.assign(vite.config.env, env)
+  Object.assign(clientVite.config.env, env)
 
   const NULL_BYTE_PLACEHOLDER = `/@id/__x00__`;
   const reg = /\.(m?js|ts|vue|sass|scss|css)(\?.+)?$/
@@ -115,7 +118,7 @@ const init = async () => {
     if (req.url.startsWith("/src/") || req.url.startsWith("/@") || reg.test(req.url)) {
       try {
         const url = req.url.replace(NULL_BYTE_PLACEHOLDER, '\0')
-        const result = await vite.transformRequest(url)
+        const result = await clientVite.transformRequest(url)
         if (result === null) {
           return reply.code(404).send(`File ${url} not found`)
         }
@@ -140,7 +143,7 @@ const init = async () => {
 
       let template = fs.readFileSync(resolve(process.cwd(), "src/frontend/index.html"), "utf-8")
       template = template.replaceAll("./", '/src/frontend/')
-      template = await vite.transformIndexHtml(req.url, template, req.originalUrl)
+      template = await clientVite.transformIndexHtml(req.url, template, req.originalUrl)
 
       return reply.headers({ "content-type": "text/html" }).send(template)
     })
