@@ -1,6 +1,6 @@
 {
   "name": "@den59k/vite-utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
@@ -37,6 +37,7 @@
     "build": "vite build"
   },
   "bin": {
-    "fastifyRunner": "dist/fastifyRunner.js"
+    "fastifyRunner": "dist/fastifyRunner.js",
+    "viteRunner": "dist/viteRunner.js"
   }
 }
