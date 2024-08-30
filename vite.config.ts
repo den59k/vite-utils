@@ -10,7 +10,8 @@ export default defineConfig({
     lib: {
       entry:  {
         index: "src/index.ts",
-        fastifyRunner: "src/fastifyRunner/fastifyRunner"
+        fastifyRunner: "src/fastifyRunner/fastifyRunner",
+        viteRunner: "src/viteRunner/viteRunner"
       },
       formats: [ "es", "cjs" ],
       name: "main"
