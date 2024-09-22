@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import buildintModules from 'builtin-modules'
 import pkg from './package.json';
 
 export default defineConfig({
@@ -22,7 +23,8 @@ export default defineConfig({
         "fs",
         "path",
         "child_process",
-        ...Object.keys(pkg.dependencies),
+        ...buildintModules,
+        ...Object.keys(pkg.devDependencies)
       ],
     }
   },
